@@ -1,6 +1,5 @@
 import subprocess
 
-
 def get_song_data(data):
     result = {}
     i = 0
@@ -34,14 +33,18 @@ def get_song_data(data):
 
     return result
 
-
 now_playing_result = subprocess.run(
     ['osascript', 'now_playing.applescript'],
     capture_output=True,
     text=True
 )
 
+
 if __name__ == "__main__":
+    subprocess.run(
+        ['osascript', 'song_artwork.applescript']
+    )
+    
     if not now_playing_result.stdout == "" and now_playing_result.stderr == "":
         print(now_playing_result.stdout)
     else:

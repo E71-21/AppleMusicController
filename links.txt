@@ -1,0 +1,8 @@
+
+http://localhost:5050/nowplaying
+
+http://localhost:5050/next
+
+http://localhost:5050/previous
+
+http://localhost:5050/playpause

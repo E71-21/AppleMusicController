@@ -34,7 +34,7 @@ def get_song_data(data):
     return result
 
 now_playing_result = subprocess.run(
-    ['osascript', 'now_playing.applescript'],
+    ['osascript', 'Apple Scripts/now_playing.applescript'],
     capture_output=True,
     text=True
 )
@@ -42,7 +42,7 @@ now_playing_result = subprocess.run(
 
 if __name__ == "__main__":
     subprocess.run(
-        ['osascript', 'song_artwork.applescript']
+        ['osascript', 'Apple Scripts/song_artwork.applescript']
     )
     
     if not now_playing_result.stdout == "" and now_playing_result.stderr == "":

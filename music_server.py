@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 import subprocess
 import json
 
@@ -80,6 +80,13 @@ def next_track():
 def previous_track():
     run_script('previous_track.applescript')
     return "OK"
+
+@app.route('/artwork')
+def get_artwork():
+    subprocess.run(
+        ['osascript', 'Apple Scripts/song_artwork.applescript']
+    )
+    return send_from_directory("Song Art", "CurrentSongArtwork.jpg")
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5050)

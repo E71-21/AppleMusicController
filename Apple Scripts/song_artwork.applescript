@@ -7,9 +7,9 @@ if application "Music" is running then
                 set art to item 1 of artworkList
                 set artData to data of art
                 
-                -- Build the file path inside Documents/Github/AppleMusicController
+                -- Build the file path inside Documents/Github/AppleMusicController/Song Art
                 set baseFolder to (path to documents folder as text)
-                set folderPath to baseFolder & "Github:AppleMusicController:"
+                set folderPath to baseFolder & "Github:AppleMusicController:Song Art:"
                 set filePath to folderPath & "CurrentSongArtwork.jpg"
                 
                 -- Save the artwork

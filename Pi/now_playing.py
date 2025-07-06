@@ -44,7 +44,7 @@ def get_artwork():
     try:
         res = requests.get("http://localhost:5050/artwork")
         if res.ok:
-            with open("Pi/artwork.jpg", "wb") as f:
+            with open("Pi/Song Art/artwork.jpg", "wb") as f:
                 f.write(res.content)
             print("Artwork saved as artwork.jpg")
         else:
@@ -54,6 +54,8 @@ def get_artwork():
 
 class MyApp(App):
     def build(self):
+
+
         outer_layout = BoxLayout(orientation='horizontal', padding=[70, 20, 20, 20], spacing=20)
 
         with outer_layout.canvas.before: # type: ignore
@@ -63,20 +65,20 @@ class MyApp(App):
         outer_layout.bind(size=self._update_rect, pos=self._update_rect) # type: ignore
 
 
-        image_container = Widget(size_hint=(0.5, 1))
+        self.image_container = Widget(size_hint=(0.5, 1))
 
-        with image_container.canvas: # type: ignore
+        with self.image_container.canvas: # type: ignore
             Color(1, 1, 1, 1)
-            self.image_texture = CoreImage("Pi/artwork.jpg").texture
+            self.image_texture = CoreImage("Pi/Song Art/artwork.jpg").texture
             self.rounded_image = RoundedRectangle(
                 texture=self.image_texture,
-                pos=image_container.pos,
-                size=image_container.size,
+                pos=self.image_container.pos,
+                size=self.image_container.size,
                 radius=[50]
             )
 
-        image_container.bind(pos=self._update_rounded_image, size=self._update_rounded_image) # type: ignore
-        outer_layout.add_widget(image_container)
+        self.image_container.bind(pos=self._update_rounded_image, size=self._update_rounded_image) # type: ignore
+        outer_layout.add_widget(self.image_container)
 
 
         inner_layout = AnchorLayout(
@@ -167,8 +169,6 @@ class MyApp(App):
             album_playlist_label_wrapper.add_widget(self.playlistlabel)
 
 
-
-
         content_wrapper = BoxLayout(
             orientation='vertical',
             spacing=130,
@@ -179,12 +179,45 @@ class MyApp(App):
         content_wrapper.add_widget(song_artist_label_wrapper)
         content_wrapper.add_widget(album_playlist_label_wrapper)
 
+        # Create the play/pause button
+        self.play_pause_button = Button(
+            size_hint=(None, None),
+            size=(120, 120),
+            background_normal='Pi/Assets/pause.png',
+            background_down='Pi/Assets/pause.png',
+            border=(0, 0, 0, 0)
+        )
+
+
+        # Button state
+        self.is_playing = True
+
+        def toggle_play_pause(instance):
+            self.is_playing = not self.is_playing
+            if self.is_playing:
+                self.play_pause_button.background_normal = 'Pi/Assets/Pause.png'
+                self.play_pause_button.background_down = 'Pi/Assets/Pause.png'
+                requests.get("http://localhost:5050/playpause")
+                print("Playing music...")
+            else:
+                self.play_pause_button.background_normal = 'Pi/Assets/play.png'
+                self.play_pause_button.background_down = 'Pi/Assets/play.png'
+                requests.get("http://localhost:5050/playpause")
+                print("Paused music...")
+
+        self.play_pause_button.bind(on_press=toggle_play_pause) # type: ignore
+
+        # Add the button below the labels
+        content_wrapper.add_widget(self.play_pause_button)
+
         inner_layout.add_widget(content_wrapper)
 
         outer_layout.add_widget(inner_layout)
 
         return outer_layout
     
+
+
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
@@ -211,6 +244,8 @@ class MyApp(App):
 
         self.rounded_image.pos = (new_x, new_y)
         self.rounded_image.size = (new_width, new_height)
+    
+
 
 
 if __name__ == "__main__":
@@ -218,3 +253,5 @@ if __name__ == "__main__":
     get_artwork()
     print(song_title, artist, album, playlist)
     MyApp().run()
+
+

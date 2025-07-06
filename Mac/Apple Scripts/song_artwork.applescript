@@ -9,7 +9,7 @@ if application "Music" is running then
                 
                 -- Build the file path inside Documents/Github/AppleMusicController/Song Art
                 set baseFolder to (path to documents folder as text)
-                set folderPath to baseFolder & "Github:AppleMusicController:Song Art:"
+                set folderPath to baseFolder & "Github:AppleMusicController:Mac:Song Art:"
                 set filePath to folderPath & "CurrentSongArtwork.jpg"
                 
                 -- Save the artwork

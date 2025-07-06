@@ -54,7 +54,7 @@ def get_song_data(data_bytes):
 def run_script(filename):
     """Runs AppleScript in this folder and returns stdout."""
     result = subprocess.run(
-        ['osascript', str("Apple Scripts/"+filename)],
+        ['osascript', str("Mac/Apple Scripts/"+filename)],
         capture_output=True
     )
     return result.stdout
@@ -84,7 +84,7 @@ def previous_track():
 @app.route('/artwork')
 def get_artwork():
     subprocess.run(
-        ['osascript', 'Apple Scripts/song_artwork.applescript']
+        ['osascript', 'Mac/Apple Scripts/song_artwork.applescript']
     )
     return send_from_directory("Song Art", "CurrentSongArtwork.jpg")
 

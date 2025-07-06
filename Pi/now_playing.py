@@ -150,26 +150,28 @@ class MyApp(App):
         )
         album_playlist_label_wrapper.add_widget(self.albumlabel)
 
-        self.playlistlabel = Label(
-            text=playlist,
-            font_size=52,
-            color=(0.63, 0.63, 0.63, 1),
-            halign='left',
-            valign='middle',
-            size_hint_y=None
-        )
-        self.playlistlabel.bind( # type: ignore
-            width=lambda instance, value: setattr(instance, 'text_size', (value, None)),
-            texture_size=lambda instance, value: setattr(instance, 'height', value[1])
-        )
-        album_playlist_label_wrapper.add_widget(self.playlistlabel)
+
+        if not playlist == "" and not playlist == "Library":
+            self.playlistlabel = Label(
+                text=playlist,
+                font_size=52,
+                color=(0.63, 0.63, 0.63, 1),
+                halign='left',
+                valign='middle',
+                size_hint_y=None
+            )
+            self.playlistlabel.bind( # type: ignore
+                width=lambda instance, value: setattr(instance, 'text_size', (value, None)),
+                texture_size=lambda instance, value: setattr(instance, 'height', value[1])
+            )
+            album_playlist_label_wrapper.add_widget(self.playlistlabel)
 
 
 
 
         content_wrapper = BoxLayout(
             orientation='vertical',
-            spacing=200,
+            spacing=130,
             size_hint_y=None
         )
         content_wrapper.bind(minimum_height=content_wrapper.setter('height')) # type: ignore

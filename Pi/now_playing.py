@@ -16,7 +16,8 @@ from kivy.uix.stencilview import StencilView
 from kivy.uix.widget import Widget
 from kivy.core.image import Image as CoreImage
 from kivy.uix.anchorlayout import AnchorLayout
-from kivy.metrics import dp, sp
+from kivy.metrics import dp
+from kivy.clock import Clock
 
 song_title = ""
 artist = ""
@@ -262,12 +263,15 @@ class MyApp(App):
         outer_layout.add_widget(inner_layout)
 
         self.update_song_info()
+        Clock.schedule_interval(lambda dt: self.update_song_info(), 1)  # every 2 seconds
         return outer_layout
     
     
     def update_song_info(self):
             global song_title, artist, album, playlist
+            old_song = song_title
             get_song()
+            if old_song == song_title: return
             self.songlabel.text = f"[b]{song_title}[/b]"
             self.artistlabel.text = artist
             self.albumlabel.text = album

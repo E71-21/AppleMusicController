@@ -1,1 +1,1 @@
-tell application "Music" to back track
+tell application "Music" to previous track

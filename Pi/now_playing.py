@@ -209,8 +209,8 @@ class MyApp(App):
         self.play_pause_button = Button(
             size_hint=(None, None),
             size=(dp(120), dp(120)),
-            background_normal='Pi/Assets/pause.png',
-            background_down='Pi/Assets/pause.png',
+            background_normal='Pi/Assets/play_pause.png',
+            background_down='Pi/Assets/play_pause.png',
             border=(0, 0, 0, 0)
         )
 
@@ -236,13 +236,13 @@ class MyApp(App):
         def toggle_play_pause(instance):
             self.is_playing = not self.is_playing
             if self.is_playing:
-                self.play_pause_button.background_normal = 'Pi/Assets/pause.png'
-                self.play_pause_button.background_down = 'Pi/Assets/pause.png'
+                self.play_pause_button.background_normal = 'Pi/Assets/play_pause.png'
+                self.play_pause_button.background_down = 'Pi/Assets/play_pause.png'
                 requests.get("http://localhost:5050/playpause")
                 print("Playing music...")
             else:
-                self.play_pause_button.background_normal = 'Pi/Assets/play.png'
-                self.play_pause_button.background_down = 'Pi/Assets/play.png'
+                self.play_pause_button.background_normal = 'Pi/Assets/play_play_pause.png'
+                self.play_pause_button.background_down = 'Pi/Assets/play_play_pause.png'
                 requests.get("http://localhost:5050/playpause")
                 print("Paused music...")
 

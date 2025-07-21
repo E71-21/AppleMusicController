@@ -1,9 +1,18 @@
 from flask import Flask, jsonify, send_from_directory
 import subprocess
 import json
+import time
+from flask import make_response
+
+cooldowns = {
+    "playpause": 0,
+    "next": 0,
+    "previous": 0
+}
+
+COOLDOWN_SECONDS = 2
 
 app = Flask(__name__)
-
 
 def get_song_data(data_bytes):
     # 1. Decode bytes to string
@@ -61,23 +70,38 @@ def run_script(filename):
 
 @app.route('/nowplaying')
 def now_playing():
-    # Assumes your get_now_playing.applescript returns a dict-like string
     output = run_script('now_playing.applescript')
     formatted_output = get_song_data(output)
-    return jsonify(eval(formatted_output))  # Or parse to JSON if needed
+    return jsonify(eval(formatted_output)) 
+
 
 @app.route('/playpause')
 def playpause():
+    global cooldowns, COOLDOWN_SECONDS
+    now = time.time()
+    if now - cooldowns["playpause"] < COOLDOWN_SECONDS:
+        return make_response("Too fast", 429)
+    cooldowns["playpause"] = now # type: ignore
     run_script('play_pause.applescript')
     return "OK"
 
 @app.route('/next')
 def next_track():
+    global cooldowns, COOLDOWN_SECONDS
+    now = time.time()
+    if now - cooldowns["next"] < COOLDOWN_SECONDS:
+        return make_response("Too fast", 429)
+    cooldowns["next"] = now # type: ignore
     run_script('next_track.applescript')
     return "OK"
 
 @app.route('/previous')
 def previous_track():
+    global cooldowns, COOLDOWN_SECONDS
+    now = time.time()
+    if now - cooldowns["previous"] < COOLDOWN_SECONDS:
+        return make_response("Too fast", 429)
+    cooldowns["previous"] = now # type: ignore
     run_script('previous_track.applescript')
     return "OK"
 

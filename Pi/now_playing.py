@@ -1,7 +1,13 @@
+from kivy.config import Config
+Config.set('input', 'mouse', 'mouse,disable')
+
+
+
 from kivy.core.window import Window
 import requests
 import shutil
 import os
+
 
 # Set 5:3 aspect ratio
 Window.size = (800, 480)
@@ -25,10 +31,14 @@ album = ""
 playlist = ""
 path_to_artwork = ""
 
+IP_ADRESS = "" # Set to the ip adress of the host (the device running music_server.py)
+PORT = "5050" # Set to the port the server is runnning at (5050 is default)
+PATH_TO_APPLEMUSICCONTROLLER = ""
+
 def get_song():
     global song_title, artist, album, playlist
     try:
-        response = requests.get("http://localhost:5050/nowplaying")
+        response = requests.get("http://"+IP_ADRESS+":"+PORT+"/nowplaying")
         if response.ok:
             data = response.json()
             print("Song:", data.get('title'))
@@ -42,30 +52,30 @@ def get_song():
         else:
             print("Error:", response.status_code)
     except Exception as e:
-        print("Exception:", e)
+        print("Exception get song:", e)
 
 
 def get_artwork():
     global path_to_artwork
     try:
-        shutil.rmtree("Pi/Song Art")
-        os.mkdir("Pi/Song Art")
-        res = requests.get("http://localhost:5050/artwork")
+        shutil.rmtree(PATH_TO_APPLEMUSICCONTROLLER+"/Pi/Song Art")
+        os.mkdir(PATH_TO_APPLEMUSICCONTROLLER+"/Pi/Song Art")
+        res = requests.get("http://"+IP_ADRESS+":"+PORT+"/artwork")
         if res.ok:
-            with open(f"Pi/Song Art/artwork_{song_title.replace(' ', '')}.jpg", "wb") as f:
+            with open(PATH_TO_APPLEMUSICCONTROLLER+f"/Pi/Song Art/artwork_{song_title.replace(' ', '')}.jpg", "wb") as f:
                 f.write(res.content)
-            path_to_artwork = f"Pi/Song Art/artwork_{song_title.replace(' ', '')}.jpg"
+            path_to_artwork = PATH_TO_APPLEMUSICCONTROLLER+f"/Pi/Song Art/artwork_{song_title.replace(' ', '')}.jpg"
             print(path_to_artwork)
         else:
             print("Error getting artwork:", res.status_code)
     except Exception as e:
-        print("Exception:", e)
+        print("Exception get artwork:", e)
 
 class MyApp(App):
     
     def build(self):
 
-        outer_layout = BoxLayout(orientation='horizontal', padding=[dp(70), dp(20), dp(20), dp(20)], spacing=dp(20))
+        outer_layout = BoxLayout(orientation='horizontal', padding=[dp(70), dp(20), dp(0), dp(20)], spacing=dp(20))
 
         with outer_layout.canvas.before: # type: ignore
             Color(0.10, 0.11, 0.12, 1)
@@ -91,22 +101,22 @@ class MyApp(App):
 
         inner_layout = AnchorLayout(
             anchor_y='top',
-            padding=[dp(20), dp(100), dp(20), dp(0)],
+            padding=[dp(20), dp(30), dp(0), dp(0)],
             size_hint=(0.5, 1)
         )
 
         
         song_artist_label_wrapper = BoxLayout(
             orientation="vertical",
-            spacing=dp(20),
-            padding=[dp(20), dp(0), dp(20), dp(0)],
+            spacing=dp(10),
+            padding=[dp(20), dp(0), dp(0), dp(0)],
             size_hint_y=None,
         )
 
         self.songlabel = Label(
             text=f'[b]{song_title}[/b]',
             markup=True,
-            font_size=dp(70),
+            font_size=dp(40),
             color=(0.98, 0.98, 0.96, 1),
             halign='left',
             valign='middle',
@@ -121,7 +131,7 @@ class MyApp(App):
 
         self.artistlabel = Label(
             text=artist,
-            font_size=dp(60),
+            font_size=dp(30),
             color=(0.63, 0.63, 0.63, 1),
             halign='left',
             valign='middle',
@@ -142,13 +152,13 @@ class MyApp(App):
         album_playlist_label_wrapper = BoxLayout(
             orientation="vertical",
             spacing=dp(20),
-            padding=[dp(20), dp(0), dp(20), dp(0)],
+            padding=[dp(20), dp(0), dp(0), dp(0)],
             size_hint_y=None,
         )
 
         self.albumlabel = Label(
             text=album,
-            font_size=dp(52),
+            font_size=dp(25),
             color=(0.63, 0.63, 0.63, 1),
             halign='left',
             valign='middle',
@@ -164,7 +174,7 @@ class MyApp(App):
         if playlist and not playlist == "Library":
             self.playlistlabel = Label(
                 text=playlist,
-                font_size=dp(52),
+                font_size=dp(25),
                 color=(0.63, 0.63, 0.63, 1),
                 halign='left',
                 valign='middle',
@@ -179,7 +189,7 @@ class MyApp(App):
 
         content_wrapper = BoxLayout(
             orientation='vertical',
-            spacing=dp(130),
+            spacing=dp(0),
             padding=[0, 0, 0, dp(30)],
         )
         content_wrapper.bind(minimum_height=content_wrapper.setter('height')) # type: ignore
@@ -190,65 +200,55 @@ class MyApp(App):
         button_anchor = AnchorLayout(
             anchor_x='center',
             anchor_y='bottom',
-            padding=[0, 0, 0, dp(80)]
+            padding=[0, 0, 0, dp(25)]
         )
 
         self.button_wrapper = BoxLayout(
             orientation="horizontal",
-            spacing=dp(20)
+            spacing=dp(10)
         )
 
         self.previous_button = Button(
             size_hint=(None, None),
-            size=(dp(120), dp(120)),
-            background_normal='Pi/Assets/previous.png',
-            background_down='Pi/Assets/previous.png',
+            size=(dp(65), dp(65)),
+            background_normal=PATH_TO_APPLEMUSICCONTROLLER+'/Pi/Assets/previous.png',
+            background_down=PATH_TO_APPLEMUSICCONTROLLER+'/Pi/Assets/previous.png',
             border=(0, 0, 0, 0)
         )
         
         self.play_pause_button = Button(
             size_hint=(None, None),
-            size=(dp(120), dp(120)),
-            background_normal='Pi/Assets/play_pause.png',
-            background_down='Pi/Assets/play_pause.png',
+            size=(dp(70), dp(70)),
+            background_normal=PATH_TO_APPLEMUSICCONTROLLER+'/Pi/Assets/play_pause.png',
+            background_down=PATH_TO_APPLEMUSICCONTROLLER+'/Pi/Assets/play_pause.png',
             border=(0, 0, 0, 0)
         )
 
         self.next_button = Button(
             size_hint=(None, None),
-            size=(dp(120), dp(120)),
-            background_normal='Pi/Assets/next.png',
-            background_down='Pi/Assets/next.png',
+            size=(dp(65), dp(65)),
+            background_normal=PATH_TO_APPLEMUSICCONTROLLER+'/Pi/Assets/next.png',
+            background_down=PATH_TO_APPLEMUSICCONTROLLER+'/Pi/Assets/next.png',
             border=(0, 0, 0, 0)
         )
 
 
         def previous_song(instance):
-            requests.get("http://localhost:5050/previous")
+            requests.get("http://"+IP_ADRESS+":"+PORT+"/previous")
             self.update_song_info()
         
         def next_song(instance):
-            requests.get("http://localhost:5050/next")
+            requests.get("http://"+IP_ADRESS+":"+PORT+"/next")
             self.update_song_info()
 
-        self.is_playing = True
 
         def toggle_play_pause(instance):
-            self.is_playing = not self.is_playing
-            if self.is_playing:
-                self.play_pause_button.background_normal = 'Pi/Assets/play_pause.png'
-                self.play_pause_button.background_down = 'Pi/Assets/play_pause.png'
-                requests.get("http://localhost:5050/playpause")
-                print("Playing music...")
-            else:
-                self.play_pause_button.background_normal = 'Pi/Assets/play_play_pause.png'
-                self.play_pause_button.background_down = 'Pi/Assets/play_play_pause.png'
-                requests.get("http://localhost:5050/playpause")
-                print("Paused music...")
+            requests.get("http://"+IP_ADRESS+":"+PORT+"/playpause")
+                
 
-        self.play_pause_button.bind(on_press=toggle_play_pause) # type: ignore
-        self.previous_button.bind(on_press=previous_song) # type: ignore
-        self.next_button.bind(on_press=next_song) # type: ignore
+        self.play_pause_button.bind(on_release=toggle_play_pause) # type: ignore
+        self.previous_button.bind(on_release=previous_song) # type: ignore
+        self.next_button.bind(on_release=next_song) # type: ignore
 
         self.button_wrapper.add_widget(self.previous_button)
         self.button_wrapper.add_widget(self.play_pause_button)
@@ -275,6 +275,7 @@ class MyApp(App):
             self.songlabel.text = f"[b]{song_title}[/b]"
             self.artistlabel.text = artist
             self.albumlabel.text = album
+            
 
             if hasattr(self, 'playlistlabel') and self.playlistlabel:
                 self.playlistlabel.text = playlist if (playlist and playlist != "Library") else ""
@@ -321,5 +322,7 @@ if __name__ == "__main__":
     get_artwork()
     print(song_title, artist, album, playlist)
     MyApp().run()
+
+
 
 
